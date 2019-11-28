@@ -66,8 +66,8 @@ class Ridge(BaseModel):
 
 
 
-def sigmoid(t):
-    return 1 / (1 + np.exp(-t))
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
 class LogisticRegression(BaseModel):
 
@@ -91,3 +91,40 @@ class LogisticRegression(BaseModel):
 
     def update(self, gradient, learning_rate):
         self.params -= learning_rate * gradient
+
+# could be wrong, need to make sure it is point wise
+def ReLU(x):
+    return np.max(0, x)
+
+class FeedForwardNeuralNetwork(BaseModel):
+
+    def __init__(self, layers, activation=ReLU):
+
+        self.layers = layers
+
+        params = OrderedDict()
+        for i, in_dim, out_dim in enumerate(zip(self.layers[:1], self.layers[1:])):
+            layer = np.random.normal(0, 1, size=(out_dim, in_dim))
+            params['Fully_Connected_{}'.format(i)] = layer
+
+        super(FeedForwardNeuralNetwork, self).__init__(params, "FeedForwardNeuralNetwork")
+
+        self.activation = activation
+
+    def forward(self, X):
+
+        hidden = X
+        for layer in self.params:
+            hidden = self.activation(layer @ hidden)
+
+        return hidden
+
+    def loss(self, X, y):
+        pass
+
+    def gradient(self, X, y):
+        pass
+
+    def update(self, gradient, learning_rate):
+        pass
+
